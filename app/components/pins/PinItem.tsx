@@ -9,6 +9,10 @@ interface Props {
 function PinItem({ pin }: Props) {
   const router = useRouter();
 
+  if (pin.title === "Sevimli Sincap") {
+    return null;
+  }
+
   return (
     <div
       className="relative 
