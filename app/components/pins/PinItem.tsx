@@ -3,15 +3,14 @@ import React from "react";
 import { useRouter } from "next/navigation";
 
 interface Props {
-  pin: any;
+  pin: {
+    url: string;
+    id: string;
+  };
 }
 
 function PinItem({ pin }: Props) {
   const router = useRouter();
-
-  if (pin.title === "Sevimli Sincap") {
-    return null;
-  }
 
   return (
     <div
@@ -27,13 +26,13 @@ function PinItem({ pin }: Props) {
       onClick={() => router.push("/pin/" + pin.id)}
     >
       <Image
-        src={pin.image}
-        alt={pin.title}
+        src={pin.url}
+        alt={pin.url}
         width={500}
         height={500}
         className="rounded-3xl 
         cursor-pointer relative z-0"
-        blurDataURL={pin.image}
+        blurDataURL={pin.url}
         loading="lazy"
         placeholder="blur"
       />

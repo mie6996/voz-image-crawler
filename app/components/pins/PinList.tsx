@@ -1,9 +1,11 @@
-import { DocumentData } from "firebase/firestore";
-import React, { useEffect } from "react";
+import React from "react";
 import PinItem from "./PinItem";
 
 interface Props {
-  listOfPins: DocumentData;
+  listOfPins: {
+    url: string;
+    id: string;
+  }[];
 }
 
 function PinList({ listOfPins }: Props) {
