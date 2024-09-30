@@ -14,7 +14,7 @@ export default function Home() {
 
   const getAllPins = useCallback(async () => {
     setListOfPins([]);
-    const data = axios.get("http://localhost:3000/api/pins");
+    const data = axios.get(`${process.env.NEXT_PUBLIC_API_URL}/pins`);
 
     // const querySnapshot = await getDocs(q);
     toast

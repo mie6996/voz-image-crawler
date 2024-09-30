@@ -45,6 +45,7 @@ function Header() {
         height={50}
         onClick={() => router.push("/")}
         className="hover:bg-gray-300 p-2 rounded-full cursor-pointer"
+        priority
       />
       <button className="bg-black text-white p-2 rounded-full px-4">
         Home
