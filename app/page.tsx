@@ -1,48 +1,60 @@
 "use client";
 
-import { useCallback, useState, Suspense } from "react";
-import PinList from "./components/pins/PinList";
+import { useCallback, Suspense, useEffect } from "react";
+import PinList, { Pin } from "./components/pins/PinList";
 import axios from "axios";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import Spinner from "./components/commons/Spinner";
-import { useRouter, useSearchParams } from "next/navigation";
 import classNames from "classnames";
-import Pagination from "./components/commons/Pagination";
 import React from "react";
+import { useInView } from "react-intersection-observer";
+
+interface Page {
+  data: {
+    images: Pin[];
+  };
+  metadata: {
+    previousCursor?: number;
+    nextCursor?: number;
+  };
+}
 
 function HomeContent() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-
-  // For the pagination
-  const [pageNumberLimit] = useState(10);
-  const [minPageNumberLimit, setMinPageNumberLimit] = useState(0);
-  const [maxPageNumberLimit, setMaxPageNumberLimit] = useState(10);
-
-  const [page, setPage] = useState(1);
-
-  const offset = parseInt(searchParams.get("page") || "1", 10);
+  const [ref, inView] = useInView();
 
   const getAllPins = useCallback(
-    async ({ queryKey }: { queryKey: [string, number] }) => {
-      const [, offset] = queryKey;
-      const data = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/pins?page=${offset}`
+    async ({ pageParam }: { pageParam: number }) => {
+      const data = await axios.get<Page>(
+        `${process.env.NEXT_PUBLIC_API_URL}/pins?page=${pageParam}`
       );
-      return data;
+      return data.data;
     },
     []
   );
 
-  // Queries
-  const query = useQuery({
-    queryKey: ["pins", offset],
+  const {
+    data, // InfiniteQueryData<Page>
+    error, // Error
+    fetchNextPage,
+    hasNextPage, // boolean
+    isError,
+    isFetchingNextPage,
+    status, // "loading" | "error" | "success"
+  } = useInfiniteQuery({
+    queryKey: ["pins"],
     queryFn: getAllPins,
+    initialPageParam: 1,
+    getNextPageParam: (lastPage: Page, pages: Page[]) =>
+      lastPage.metadata.nextCursor,
   });
 
-  const { isLoading, data } = query;
+  useEffect(() => {
+    if (inView && hasNextPage) {
+      fetchNextPage();
+    }
+  }, [inView]);
 
-  if (isLoading) {
+  if (status === "pending") {
     return (
       <div
         className={classNames(
@@ -56,53 +68,32 @@ function HomeContent() {
     );
   }
 
-  const listOfPins = data?.data.pageData.images || [];
-  const totalPages = data?.data.metadata.totalPages || 0;
-  const pageSize = data?.data.metadata.size || 0;
-  const url = data?.data.pageData.url || "";
-
-  const changePage = (pageNumber: number) => {
-    setPage(pageNumber);
-    router.push(`/?page=${pageNumber}`);
-  };
-
-  const incrementPage = () => {
-    setPage(page + 1);
-    if (page + 1 > maxPageNumberLimit) {
-      setMaxPageNumberLimit(maxPageNumberLimit + pageNumberLimit);
-      setMinPageNumberLimit(minPageNumberLimit + pageNumberLimit);
-    }
-    router.push(`/?page=${page + 1}`);
-  };
-
-  const decrementPage = () => {
-    if (page - 1 === 0) {
-      return null;
-    }
-    setPage(page - 1);
-    if ((page - 1) % pageNumberLimit === 0) {
-      setMaxPageNumberLimit(maxPageNumberLimit - pageNumberLimit);
-      setMinPageNumberLimit(minPageNumberLimit - pageNumberLimit);
-    }
-
-    router.push(`/?page=${page - 1}`);
-  };
+  if (isError) {
+    return <p>Error: {error.message}</p>;
+  }
 
   return (
     <>
-      <h1 className="text-2xl font-bold text-center mt-4">{url}</h1>
       <div className="p-3">
-        <Pagination
-          totalPages={totalPages}
-          pageSize={pageSize}
-          page={offset}
-          changePage={changePage}
-          incrementPage={incrementPage}
-          decrementPage={decrementPage}
-          minPageNumberLimit={minPageNumberLimit}
-          maxPageNumberLimit={maxPageNumberLimit}
-        />
-        <PinList pins={listOfPins} />
+        {data.pages.map((group, i) => (
+          <PinList pins={group.data.images} key={i} />
+        ))}
+      </div>
+      {/* Pagination Controls */}
+      <div className="text-center p-4">
+        <button
+          ref={ref}
+          disabled={!hasNextPage || isFetchingNextPage}
+          onClick={() => fetchNextPage()}
+        >
+          {isFetchingNextPage ? (
+            <Spinner className="bg-opacity-0" />
+          ) : hasNextPage ? (
+            "Fetch More Data"
+          ) : (
+            "No more data"
+          )}
+        </button>
       </div>
     </>
   );

@@ -28,11 +28,13 @@ function PinItem({ pin }: Props) {
         alt={pin.url}
         width={500}
         height={500}
-        className="rounded-3xl 
-        cursor-pointer relative z-0"
         blurDataURL={pin.url}
-        loading="lazy"
-        placeholder="blur"
+        data-loaded="false"
+        onLoad={(event) => {
+          event.currentTarget.setAttribute("data-loaded", "true");
+        }}
+        className="data-[loaded=false]:animate-pulse data-[loaded=false]:bg-gray-100/10 rounded-3xl 
+        cursor-pointer relative z-0"
       />
     </div>
   );

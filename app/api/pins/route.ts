@@ -9,18 +9,26 @@ export async function GET(request: NextRequest) {
     where: {
       pageNumber: Number(page),
     },
-    include: {
-      images: true,
+    select: {
+      pageNumber: true,
+      url: true,
+      images: {
+        select: {
+          id: true,
+          url: true,
+        },
+      },
     },
   });
 
-  const totalPages = await prisma.page.count();
+  const totalPage = await prisma.page.count();
+  const previousCursor = Number(page) - 1 === 0 ? null : Number(page) - 1;
+  const nextCursor = Number(page) + 1 > totalPage ? null : Number(page) + 1;
 
   const metadata = {
-    page: pageData?.pageNumber,
-    size: pageData?.images.length,
-    totalPages,
+    previousCursor,
+    nextCursor,
   };
 
-  return NextResponse.json({ pageData, metadata });
+  return NextResponse.json({ metadata, data: pageData });
 }
