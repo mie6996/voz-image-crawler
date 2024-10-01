@@ -1,33 +1,27 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback } from "react";
 import PinList from "./components/pins/PinList";
-import toast from "react-hot-toast";
 import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 
 export default function Home() {
-  const [listOfPins, setListOfPins] = useState<any>([]);
-
-  useEffect(() => {
-    getAllPins();
-  }, []);
-
   const getAllPins = useCallback(async () => {
-    setListOfPins([]);
-    const data = axios.get(`${process.env.NEXT_PUBLIC_API_URL}/pins`);
-
-    // const querySnapshot = await getDocs(q);
-    toast
-      .promise(data, {
-        loading: "Loading...",
-        success: "Data loaded",
-        error: "An error occurred",
-      })
-      .then((res) => {
-        setListOfPins(res.data);
-      });
+    const data = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/pins`);
+    return data;
   }, []);
 
+  // Queries
+  const query = useQuery({ queryKey: ["pins"], queryFn: getAllPins });
+
+  const { isLoading, error, data } = query;
+
+  if (isLoading) return toast.loading("Loading...");
+
+  if (error) return toast.error("An error has occurred: " + error.message);
+
+  const listOfPins = data?.data;
   return (
     <div className="p-3">
       <PinList listOfPins={listOfPins} />

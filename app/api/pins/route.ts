@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
   const res = await fetch(url.toString());
   const html = await res.text();
   // const maxPage = html.match(/min="1" max="(\d+)"/)?.[1];
-  const maxPage = 100;
+  const maxPage = 1;
 
   const images = await Promise.all(
     Array.from({ length: Number(maxPage) }, (_, i) => {
