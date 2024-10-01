@@ -1,4 +1,4 @@
-import { url } from "inspector";
+import { prisma } from "@/app/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
@@ -8,23 +8,46 @@ export async function GET(request: NextRequest) {
 
   const res = await fetch(url.toString());
   const html = await res.text();
-  // const maxPage = html.match(/min="1" max="(\d+)"/)?.[1];
-  const maxPage = 1;
+  const maxPage = html.match(/min="1" max="(\d+)"/)?.[1];
+  // const maxPage = 1;
 
-  const images = await Promise.all(
-    Array.from({ length: Number(maxPage) }, (_, i) => {
-      return getImageFromUrl(url.toString(), i + 1);
-    })
-  ).then((res) => {
-    return res.flat();
+  // get images from all pages
+  for (let i = 1; i <= Number(maxPage); i++) {
+    const pageUrl = i === 1 ? url.toString() : `${url}page-${i}`;
+
+    const page = await prisma.page.findFirst({
+      where: {
+        url: pageUrl.toString(),
+      },
+    });
+
+    if (page === null) {
+      const images = await getImageFromUrl(pageUrl);
+
+      if (images.length === 0) {
+        continue;
+      }
+
+      await prisma.page.create({
+        data: {
+          url: pageUrl.toString(),
+          images: {
+            createMany: {
+              data: images,
+            },
+          },
+        },
+      });
+    }
+  }
+
+  return NextResponse.json({
+    message: "done",
   });
-
-  return NextResponse.json(images);
 }
 
-const getImageFromUrl = async (url: string, page: number) => {
-  const pageUrl = new URL(url + `page-${page}`);
-  const res = await fetch(pageUrl.toString());
+const getImageFromUrl = async (url: string) => {
+  const res = await fetch(url);
   const html = await res.text();
 
   // get all images in image tag and filter "src" or "data-url" attribute
@@ -65,7 +88,7 @@ const getImageFromUrl = async (url: string, page: number) => {
       return {
         url: link,
       };
-    });
+    }) as { url: string }[];
 
   return xxxx;
 };

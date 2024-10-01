@@ -1,0 +1,23 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "cockroachdb"
+  url      = env("DATABASE_URL")
+}
+
+model Image {
+  id        String   @id @default(cuid())
+  url       String
+  createdAt DateTime @default(now())
+  page      Page     @relation(fields: [pageId], references: [id])
+  pageId    Int
+}
+
+model Page {
+  id        Int      @id @default(sequence())
+  url       String   @unique
+  images    Image[]
+  createdAt DateTime @default(now())
+}
