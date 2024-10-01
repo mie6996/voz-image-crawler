@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useState, Suspense } from "react";
 import PinList from "./components/pins/PinList";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
@@ -9,12 +9,12 @@ import { useRouter, useSearchParams } from "next/navigation";
 import classNames from "classnames";
 import Pagination from "./components/commons/Pagination";
 
-export default function Home() {
+function HomeContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   // For the pagination
-  const [pageNumberLimit, setPageNumberLimit] = useState(10);
+  const [pageNumberLimit] = useState(10);
   const [minPageNumberLimit, setMinPageNumberLimit] = useState(0);
   const [maxPageNumberLimit, setMaxPageNumberLimit] = useState(10);
 
@@ -99,5 +99,13 @@ export default function Home() {
       />
       <PinList pins={listOfPins} />
     </div>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={<Spinner className="bg-opacity-0" />}>
+      <HomeContent />
+    </Suspense>
   );
 }
