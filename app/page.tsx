@@ -74,14 +74,15 @@ function HomeContent() {
   };
 
   const decrementPage = () => {
+    if (page - 1 === 0) {
+      return null;
+    }
     setPage(page - 1);
     if ((page - 1) % pageNumberLimit === 0) {
       setMaxPageNumberLimit(maxPageNumberLimit - pageNumberLimit);
       setMinPageNumberLimit(minPageNumberLimit - pageNumberLimit);
     }
-    if (page - 1 === 0) {
-      return null;
-    }
+
     router.push(`/?page=${page - 1}`);
   };
 
