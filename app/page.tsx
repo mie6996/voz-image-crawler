@@ -4,7 +4,8 @@ import { useCallback } from "react";
 import PinList from "./components/pins/PinList";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
-import toast from "react-hot-toast";
+import Spinner from "./components/commons/Spinner";
+import classNames from "classnames";
 
 export default function Home() {
   const getAllPins = useCallback(async () => {
@@ -15,11 +16,21 @@ export default function Home() {
   // Queries
   const query = useQuery({ queryKey: ["pins"], queryFn: getAllPins });
 
-  const { isLoading, error, data } = query;
+  const { isLoading, data } = query;
 
-  if (isLoading) return toast.loading("Loading...");
-
-  if (error) return toast.error("An error has occurred: " + error.message);
+  if (isLoading) {
+    return (
+      <div
+        className={classNames(
+          "fixed inset-0 bg-black bg-opacity-60",
+          "flex items-center justify-center",
+          "z-50"
+        )}
+      >
+        <Spinner className="bg-opacity-0" />
+      </div>
+    );
+  }
 
   const listOfPins = data?.data;
   return (
