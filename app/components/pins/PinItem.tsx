@@ -1,12 +1,10 @@
 import Image from "next/image";
 import React from "react";
 import { useRouter } from "next/navigation";
+import { Pin } from "./PinList";
 
 interface Props {
-  pin: {
-    url: string;
-    id: string;
-  };
+  pin: Pin;
 }
 
 function PinItem({ pin }: Props) {

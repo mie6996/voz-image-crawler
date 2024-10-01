@@ -1,29 +1,47 @@
 "use client";
-import React, { useEffect, useState } from "react";
 
-import { doc, getDoc, getFirestore } from "firebase/firestore";
-
-import { HiArrowSmallLeft } from "react-icons/hi2";
-import { useRouter } from "next/navigation";
-import app from "@/app/shared/firebaseConfig";
+import React from "react";
+import Spinner from "@/app/components/commons/Spinner";
 import PinImage from "@/app/components/pinDetail/PinImage";
 import PinInfo from "@/app/components/pinDetail/PinInfo";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import classNames from "classnames";
+import { useRouter } from "next/navigation";
+import { HiArrowSmallLeft } from "react-icons/hi2";
+
 function PinDetail({ params }: any) {
   const router = useRouter();
-  const db = getFirestore(app);
-  const [pinDetail, setPinDetail] = useState<any>([]);
-  useEffect(() => {
-    getPinDetail();
-  }, []);
+
   const getPinDetail = async () => {
-    const docRef = doc(db, "pinterest-post", params.pinId);
-    const docSnap = await getDoc(docRef);
-    if (docSnap.exists()) {
-      setPinDetail(docSnap.data());
-    } else {
-      console.log("No such document!");
-    }
+    const data = await axios.get(
+      `${process.env.NEXT_PUBLIC_API_URL}/pins/${params.pinId}`
+    );
+
+    return data;
   };
+
+  const { isLoading, data } = useQuery({
+    queryKey: ["pin", params.pinId],
+    queryFn: getPinDetail,
+  });
+
+  if (isLoading) {
+    return (
+      <div
+        className={classNames(
+          "fixed inset-0 bg-black bg-opacity-60",
+          "flex items-center justify-center",
+          "z-50"
+        )}
+      >
+        <Spinner className="bg-opacity-0" />
+      </div>
+    );
+  }
+
+  const pinDetail = data?.data;
+
   return (
     <>
       {pinDetail ? (

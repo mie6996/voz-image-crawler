@@ -35,7 +35,7 @@ export default function Home() {
   const listOfPins = data?.data;
   return (
     <div className="p-3">
-      <PinList listOfPins={listOfPins} />
+      <PinList pins={listOfPins} />
     </div>
   );
 }

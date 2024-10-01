@@ -67,7 +67,7 @@ function Profile({ params }: ProfileParams) {
   return (
     <div>
       {userInfo ? <UserInfo userInfo={userInfo} /> : null}
-      <PinList listOfPins={listOfPins} />
+      <PinList pins={listOfPins} />
     </div>
   );
 }
