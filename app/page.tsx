@@ -8,6 +8,7 @@ import Spinner from "./components/commons/Spinner";
 import { useRouter, useSearchParams } from "next/navigation";
 import classNames from "classnames";
 import Pagination from "./components/commons/Pagination";
+import React from "react";
 
 function HomeContent() {
   const router = useRouter();
@@ -58,6 +59,7 @@ function HomeContent() {
   const listOfPins = data?.data.pageData.images || [];
   const totalPages = data?.data.metadata.totalPages || 0;
   const pageSize = data?.data.metadata.size || 0;
+  const url = data?.data.pageData.url || "";
 
   const changePage = (pageNumber: number) => {
     setPage(pageNumber);
@@ -87,19 +89,22 @@ function HomeContent() {
   };
 
   return (
-    <div className="p-3">
-      <Pagination
-        totalPages={totalPages}
-        pageSize={pageSize}
-        page={offset}
-        changePage={changePage}
-        incrementPage={incrementPage}
-        decrementPage={decrementPage}
-        minPageNumberLimit={minPageNumberLimit}
-        maxPageNumberLimit={maxPageNumberLimit}
-      />
-      <PinList pins={listOfPins} />
-    </div>
+    <>
+      <h1 className="text-2xl font-bold text-center mt-4">{url}</h1>
+      <div className="p-3">
+        <Pagination
+          totalPages={totalPages}
+          pageSize={pageSize}
+          page={offset}
+          changePage={changePage}
+          incrementPage={incrementPage}
+          decrementPage={decrementPage}
+          minPageNumberLimit={minPageNumberLimit}
+          maxPageNumberLimit={maxPageNumberLimit}
+        />
+        <PinList pins={listOfPins} />
+      </div>
+    </>
   );
 }
 
