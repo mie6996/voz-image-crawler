@@ -63,7 +63,7 @@ function HomeContent() {
     initialPageParam: { pageUrl, offset: 0 },
     getNextPageParam: (lastPage: Page, pages: Page[]) =>
       lastPage.metadata.hasNextPage
-        ? { pageUrl: "", offset: lastPage.metadata.offset + 1 }
+        ? { pageUrl, offset: lastPage.metadata.offset + 1 }
         : undefined,
   });
 
