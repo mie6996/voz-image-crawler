@@ -26,9 +26,11 @@ export async function POST(request: NextRequest) {
       url: originalPage,
     },
   });
+  console.log("🚀 ~ POST ~ page:", page);
 
   if (page === null) {
     const images = await getImageFromOriginalUrl(pageUrl);
+    console.log("🚀 ~ POST ~ images:", images);
 
     if (images.length === 0) {
       return NextResponse.json({
@@ -95,6 +97,9 @@ const getImageFromOriginalUrl = async (url: string) => {
   // get images from all pages
   for (let i = 1; i <= Number(maxPage); i++) {
     const pageUrl = i === 1 ? url.toString() : `${url}page-${i}`;
+
+    const res = await fetch(pageUrl);
+    const html = await res.text();
 
     // get all images in image tag and filter "src" or "data-url" attribute
     const matches = html.match(/<img[^>]+>/g);

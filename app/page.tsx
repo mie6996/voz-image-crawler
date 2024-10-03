@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, Suspense, useEffect, useState } from "react";
+import { useCallback, Suspense, useEffect, useState, useRef } from "react";
 import PinList, { Pin } from "./components/pins/PinList";
 import axios from "axios";
 import { useInfiniteQuery } from "@tanstack/react-query";
@@ -23,15 +23,15 @@ interface Page {
 
 function HomeContent() {
   const [ref, inView] = useInView();
-  const [pageUrl, setPageUrl] = useState(
+  // page url is useRef
+  const pageUrlRef = useRef<String>(
     "https://voz.vn/t/no-sex-vitamin-gai-xinh-moi-ngay-cho-doi-mat-sang-khoe-dep.783806/"
   );
 
   const getAllPins = useCallback(
     async ({
       pageParam = {
-        pageUrl:
-          "https://voz.vn/t/no-sex-vitamin-gai-xinh-moi-ngay-cho-doi-mat-sang-khoe-dep.783806/",
+        pageUrl: pageUrlRef.current,
         offset: 0,
       },
     }) => {
@@ -39,7 +39,7 @@ function HomeContent() {
       const data = await axios.post<Page>(
         `${
           process.env.NEXT_PUBLIC_API_URL
-        }/images?limit=${10}&offset=${offset}`,
+        }/images?limit=${50}&offset=${offset}`,
         {
           pageUrl,
         }
@@ -60,10 +60,13 @@ function HomeContent() {
   } = useInfiniteQuery({
     queryKey: ["pins"],
     queryFn: getAllPins,
-    initialPageParam: { pageUrl, offset: 0 },
+    initialPageParam: {
+      pageUrl: pageUrlRef.current,
+      offset: 0,
+    },
     getNextPageParam: (lastPage: Page, pages: Page[]) =>
       lastPage.metadata.hasNextPage
-        ? { pageUrl, offset: lastPage.metadata.offset + 1 }
+        ? { pageUrl: pageUrlRef.current, offset: lastPage.metadata.offset + 1 }
         : undefined,
   });
 
