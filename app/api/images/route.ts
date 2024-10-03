@@ -1,4 +1,5 @@
 import { prisma } from "@/app/lib/prisma";
+import { RedisService } from "@/app/lib/RedisService";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
@@ -20,13 +21,34 @@ export async function POST(request: NextRequest) {
 
   const originalPage = pageUrl.split("/page-")[0];
 
+  const pageKey = RedisService.generateKey(
+    "page",
+    encodeURIComponent(originalPage),
+    String(offset),
+    String(limit)
+  );
+  try {
+    if (await RedisService.hasKey(pageKey)) {
+      return NextResponse.json(await RedisService.getKey(pageKey));
+    }
+  } catch (e) {
+    if (e instanceof Error) {
+      console.error(
+        "[Redis] Could not connect to Redis due to error " + e.message
+      );
+    } else {
+      console.error(
+        "[Redis] Could not connect to Redis due to an unknown error"
+      );
+    }
+  }
+
   // get images from original page
   const page = await prisma.page.findFirst({
     where: {
       url: originalPage,
     },
   });
-  console.log("🚀 ~ POST ~ page:", page);
 
   if (page === null) {
     const images = await getImageFromOriginalUrl(pageUrl);
@@ -82,7 +104,23 @@ export async function POST(request: NextRequest) {
     offset,
   };
 
-  return NextResponse.json({ data: images, metadata });
+  const result = { data: images, metadata };
+
+  try {
+    await RedisService.setKey(pageKey, JSON.stringify(result));
+  } catch (e) {
+    if (e instanceof Error) {
+      console.error(
+        "[Redis] Could not connect to Redis due to error " + e.message
+      );
+    } else {
+      console.error(
+        "[Redis] Could not connect to Redis due to an unknown error"
+      );
+    }
+  }
+
+  return NextResponse.json(result);
 }
 
 const getImageFromOriginalUrl = async (url: string) => {
