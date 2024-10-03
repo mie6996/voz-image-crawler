@@ -52,7 +52,6 @@ export async function POST(request: NextRequest) {
 
   if (page === null) {
     const images = await getImageFromOriginalUrl(pageUrl);
-    console.log("🚀 ~ POST ~ images:", images);
 
     if (images.length === 0) {
       return NextResponse.json({
