@@ -7,8 +7,8 @@ import Providers from "./Providers";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Voz Image",
-  description: "Voz Image",
+  title: "Voz Image Crawler",
+  description: "Voz Image Crawler",
 };
 
 export default function RootLayout({

@@ -16,9 +16,8 @@ model Image {
 }
 
 model Page {
-  id         Int      @id @default(sequence())
-  pageNumber Int      @unique
-  url        String   @unique
-  images     Image[]
-  createdAt  DateTime @default(now())
+  id        Int      @id @default(sequence())
+  url       String   @unique
+  images    Image[]
+  createdAt DateTime @default(now())
 }

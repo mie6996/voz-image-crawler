@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, Suspense, useEffect } from "react";
+import { useCallback, Suspense, useEffect, useState } from "react";
 import PinList, { Pin } from "./components/pins/PinList";
 import axios from "axios";
 import { useInfiniteQuery } from "@tanstack/react-query";
@@ -11,21 +11,38 @@ import { useInView } from "react-intersection-observer";
 
 interface Page {
   data: {
+    url: string;
     images: Pin[];
   };
   metadata: {
-    previousCursor?: number;
-    nextCursor?: number;
+    offset: number;
+    hasPrevPage: boolean;
+    hasNextPage: boolean;
   };
 }
 
 function HomeContent() {
   const [ref, inView] = useInView();
+  const [pageUrl, setPageUrl] = useState(
+    "https://voz.vn/t/no-sex-vitamin-gai-xinh-moi-ngay-cho-doi-mat-sang-khoe-dep.783806/"
+  );
 
   const getAllPins = useCallback(
-    async ({ pageParam }: { pageParam: number }) => {
-      const data = await axios.get<Page>(
-        `${process.env.NEXT_PUBLIC_API_URL}/pins?page=${pageParam}`
+    async ({
+      pageParam = {
+        pageUrl:
+          "https://voz.vn/t/no-sex-vitamin-gai-xinh-moi-ngay-cho-doi-mat-sang-khoe-dep.783806/",
+        offset: 0,
+      },
+    }) => {
+      const { pageUrl, offset } = pageParam;
+      const data = await axios.post<Page>(
+        `${
+          process.env.NEXT_PUBLIC_API_URL
+        }/images?limit=${10}&offset=${offset}`,
+        {
+          pageUrl,
+        }
       );
       return data.data;
     },
@@ -33,8 +50,8 @@ function HomeContent() {
   );
 
   const {
-    data, // InfiniteQueryData<Page>
-    error, // Error
+    data,
+    error,
     fetchNextPage,
     hasNextPage, // boolean
     isError,
@@ -43,9 +60,11 @@ function HomeContent() {
   } = useInfiniteQuery({
     queryKey: ["pins"],
     queryFn: getAllPins,
-    initialPageParam: 1,
+    initialPageParam: { pageUrl, offset: 0 },
     getNextPageParam: (lastPage: Page, pages: Page[]) =>
-      lastPage.metadata.nextCursor,
+      lastPage.metadata.hasNextPage
+        ? { pageUrl: "", offset: lastPage.metadata.offset + 1 }
+        : undefined,
   });
 
   useEffect(() => {

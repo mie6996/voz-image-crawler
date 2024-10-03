@@ -1,6 +1,5 @@
 "use client";
 
-import { useSession } from "next-auth/react";
 import Image from "next/image";
 import React, { useState } from "react";
 import { HiArrowUpCircle } from "react-icons/hi2";
@@ -10,7 +9,6 @@ interface Props {
 }
 
 function UploadImage({ setFile }: Props) {
-  const { data: session } = useSession();
   const [selectedFile, setSelectedFile] = useState();
 
   return (

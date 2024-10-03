@@ -56,9 +56,7 @@ function PinDetail({ params }: any) {
       rounded-2xl p-3 md:p-7 lg:p-12 xl:pd-16 "
           >
             <PinImage pinDetail={pinDetail} />
-            <div className="">
-              <PinInfo pinDetail={pinDetail} />
-            </div>
+            <PinInfo pinDetail={pinDetail} />
           </div>
         </div>
       ) : null}
