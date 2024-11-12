@@ -21,7 +21,6 @@ model Page {
   pageNumber Int
   parent     ParentPage @relation(fields: [parentId], references: [id])
   parentId   Int
-  createdAt  DateTime   @default(now())
   images     Image[]
 
   @@unique([parentId, pageNumber])
