@@ -1,12 +1,12 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Pin } from "./PinList";
+import { ImageType } from "./ImageList";
 
 interface Props {
-  pin: Pin;
+  image: ImageType;
 }
 
-function PinItem({ pin }: Props) {
+function PinItem({ image }: Props) {
   const router = useRouter();
 
   return (
@@ -20,14 +20,14 @@ function PinItem({ pin }: Props) {
        before:opacity-50
        cursor-pointer
        "
-      onClick={() => router.push("/pin/" + pin.id)}
+      onClick={() => router.push("/pin/" + image.id)}
     >
       <Image
-        src={pin.url}
-        alt={pin.url}
+        src={image.url}
+        alt={image.url}
         width={500}
         height={500}
-        blurDataURL={pin.url}
+        blurDataURL={image.url}
         data-loaded="false"
         onLoad={(event) => {
           event.currentTarget.setAttribute("data-loaded", "true");

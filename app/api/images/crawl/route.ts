@@ -1,5 +1,5 @@
-import { ImageService } from "@/app/lib/ImageService";
 import { NextRequest, NextResponse } from "next/server";
+import { ImageService } from "../../../lib/ImageService";
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
