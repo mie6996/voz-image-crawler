@@ -3,7 +3,7 @@ import { RedisService } from "./RedisService";
 
 export class ImageService {
   // Get images from the original page
-  static async getImages(url: string, currentPageNumber: number) {
+  static async getImages(parentPageId: number, currentPageNumber: number) {
     // Validate current page number
     if (currentPageNumber < 1) {
       currentPageNumber = 1;
@@ -36,7 +36,7 @@ export class ImageService {
     // Check if the page exists in the database
     const parentPage = await prisma.parentPage.findFirst({
       where: {
-        url,
+        id: parentPageId,
       },
     });
 
@@ -50,7 +50,7 @@ export class ImageService {
     const page = await prisma.page.findFirst({
       where: {
         parent: {
-          url,
+          id: parentPageId,
         },
         pageNumber: currentPageNumber,
       },
@@ -67,7 +67,7 @@ export class ImageService {
       where: {
         page: {
           parent: {
-            url,
+            id: parentPageId,
           },
           pageNumber: currentPageNumber,
         },

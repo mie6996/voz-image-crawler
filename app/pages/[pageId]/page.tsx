@@ -15,33 +15,24 @@ interface Page {
   images: ImageType[];
 }
 
-interface PageParam {
-  url: string;
-  currentPageNumber: number;
-}
-
 function PageDetail({ params }: any) {
   // page url is useRef
-  const urlRef = useRef<string>(
-    "https://voz.vn/t/no-sex-vitamin-gai-xinh-moi-ngay-cho-doi-mat-sang-khoe-dep.783806/"
-  );
-  const currentPageNumberRef = useRef<number>(1);
+  const pageId = params.pageId;
+  const currentPageNumberRef = useRef(1);
 
-  const getAllPins = useCallback(async (pageParam: PageParam) => {
-    const { url, currentPageNumber } = pageParam;
-    const data = await axios.get<Page>(
-      `${process.env.NEXT_PUBLIC_API_URL}/images?url=${url}&currentPageNumber=${currentPageNumber}`
-    );
-    return data.data;
-  }, []);
+  const getAllPins = useCallback(
+    async (currentPageNumber: number) => {
+      const data = await axios.get<Page>(
+        `${process.env.NEXT_PUBLIC_API_URL}/images?pageId=${pageId}&currentPageNumber=${currentPageNumber}`
+      );
+      return data.data;
+    },
+    [pageId]
+  );
 
   const { isPending, error, data } = useQuery({
-    queryKey: ["images", urlRef.current, currentPageNumberRef.current],
-    queryFn: () =>
-      getAllPins({
-        url: urlRef.current,
-        currentPageNumber: currentPageNumberRef.current,
-      }),
+    queryKey: ["images", pageId, currentPageNumberRef.current],
+    queryFn: () => getAllPins(currentPageNumberRef.current),
   });
 
   if (isPending) {

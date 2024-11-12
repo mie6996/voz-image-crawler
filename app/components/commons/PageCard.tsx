@@ -1,3 +1,5 @@
+import { useRouter } from "next/navigation";
+
 export interface PageType {
   id: number;
   title: string;
@@ -5,9 +7,17 @@ export interface PageType {
   maxPage: number;
 }
 
-const Card = ({ item }: { item: PageType }) => {
+const PageCard = ({ item }: { item: PageType }) => {
+  const router = useRouter();
+  const handleClick = () => {
+    router.push(`/pages/${item.id}`);
+  };
+
   return (
-    <div className="max-w-sm rounded overflow-hidden shadow-lg">
+    <div
+      className="max-w-sm rounded overflow-hidden shadow-lg cursor-pointer"
+      onClick={handleClick}
+    >
       <div className="px-6 py-4">
         <div className="font-bold text-xl mb-2">{item.title}</div>
         <p className="text-gray-700 text-base">{item.url}</p>
@@ -24,4 +34,4 @@ const Card = ({ item }: { item: PageType }) => {
   );
 };
 
-export default Card;
+export default PageCard;

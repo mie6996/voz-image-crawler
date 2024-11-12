@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback, Suspense, useRef } from "react";
-import Card, { PageType } from "./components/commons/Card";
+import { Suspense } from "react";
+import PageCard, { PageType } from "./components/commons/PageCard";
 import axios from "axios";
 import Spinner from "./components/commons/Spinner";
 import classNames from "classnames";
@@ -11,9 +11,8 @@ interface PagesResponse {
   message: string;
   pages: PageType[];
 }
-function HomeContent() {
-  // page url is useRef
 
+function HomeContent() {
   const { isPending, error, data } = useQuery({
     queryKey: ["pages"],
     queryFn: async () => {
@@ -47,7 +46,7 @@ function HomeContent() {
   return (
     <div className="flex flex-wrap justify-center gap-4">
       {data.pages.map((item) => (
-        <Card key={item.id} item={item} />
+        <PageCard key={item.id} item={item} />
       ))}
     </div>
   );
