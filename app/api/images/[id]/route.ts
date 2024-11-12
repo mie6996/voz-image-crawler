@@ -1,14 +1,11 @@
 import { prisma } from "@/app/lib/prisma";
 import { RedisService } from "@/app/lib/RedisService";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET({ params }: { params: { id: number } }) {
   const id = params.id;
 
-  const imageKey = RedisService.generateKey("image", id);
+  const imageKey = RedisService.generateKey("image", String(id));
   try {
     if (await RedisService.hasKey(imageKey)) {
       return NextResponse.json(await RedisService.getKey(imageKey));

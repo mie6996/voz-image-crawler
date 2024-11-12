@@ -1,14 +1,13 @@
 "use client";
 
-import React from "react";
-import Spinner from "@/app/components/commons/Spinner";
-import PinImage from "@/app/components/pinDetail/PinImage";
-import PinInfo from "@/app/components/pinDetail/PinInfo";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import classNames from "classnames";
 import { useRouter } from "next/navigation";
 import { HiArrowSmallLeft } from "react-icons/hi2";
+import Spinner from "../../components/commons/Spinner";
+import PinImage from "../../components/pinDetail/PinImage";
+import PinInfo from "../../components/pinDetail/PinInfo";
 
 function PinDetail({ params }: any) {
   const router = useRouter();

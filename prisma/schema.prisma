@@ -7,17 +7,29 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Image {
-  id        String   @id @default(cuid())
-  url       String
-  createdAt DateTime @default(now())
-  page      Page     @relation(fields: [pageId], references: [id])
-  pageId    Int
+model ParentPage {
+  id         Int      @id @default(sequence())
+  title      String
+  url        String   @unique
+  createdAt  DateTime @default(now())
+  childPages Page[]
+  maxPage    Int
 }
 
 model Page {
-  id        Int      @id @default(sequence())
-  url       String   @unique
-  images    Image[]
-  createdAt DateTime @default(now())
+  id         Int        @id @default(sequence())
+  pageNumber Int
+  parent     ParentPage @relation(fields: [parentId], references: [id])
+  parentId   Int
+  createdAt  DateTime   @default(now())
+  images     Image[]
+
+  @@unique([parentId, pageNumber])
+}
+
+model Image {
+  id     Int    @id @default(sequence())
+  url    String
+  page   Page   @relation(fields: [pageId], references: [id])
+  pageId Int
 }

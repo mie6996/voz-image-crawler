@@ -1,16 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import React from "react";
 import { HiSearch } from "react-icons/hi";
 import { useRouter } from "next/navigation";
 
 function Header() {
   const router = useRouter();
-
-  const onCreateClick = () => {
-    router.push("/pin-builder");
-  };
 
   return (
     <div className="flex gap-3 md:gap-2 items-center p-6 justify-between">

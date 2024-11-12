@@ -1,4 +1,3 @@
-import React from "react";
 import PinItem from "./PinItem";
 
 export interface Pin {

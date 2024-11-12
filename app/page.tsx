@@ -1,12 +1,11 @@
 "use client";
 
-import { useCallback, Suspense, useEffect, useState, useRef } from "react";
-import PinList, { Pin } from "./components/pins/PinList";
+import { useCallback, Suspense, useEffect, useRef } from "react";
+import PinList, { Pin } from "./components/pin/PinList";
 import axios from "axios";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import Spinner from "./components/commons/Spinner";
 import classNames from "classnames";
-import React from "react";
 import { useInView } from "react-intersection-observer";
 
 interface Page {
