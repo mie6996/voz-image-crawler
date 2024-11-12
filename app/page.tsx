@@ -1,48 +1,30 @@
 "use client";
 
 import { useCallback, Suspense, useRef } from "react";
-import PinList, { ImageType } from "./components/pin/ImageList";
+import Card, { PageType } from "./components/commons/Card";
 import axios from "axios";
 import Spinner from "./components/commons/Spinner";
 import classNames from "classnames";
 import { useQuery } from "@tanstack/react-query";
 
-interface Page {
+interface PagesResponse {
   message: string;
-  url: string;
-  currentPageNumber: number;
-  maxPage: number;
-  images: ImageType[];
+  pages: PageType[];
 }
-
-interface PageParam {
-  url: string;
-  currentPageNumber: number;
-}
-
 function HomeContent() {
   // page url is useRef
-  const urlRef = useRef<string>(
-    "https://voz.vn/t/no-sex-vitamin-gai-xinh-moi-ngay-cho-doi-mat-sang-khoe-dep.783806/"
-  );
-  const currentPageNumberRef = useRef<number>(1);
-
-  const getAllPins = useCallback(async (pageParam: PageParam) => {
-    const { url, currentPageNumber } = pageParam;
-    const data = await axios.get<Page>(
-      `${process.env.NEXT_PUBLIC_API_URL}/images?url=${url}&currentPageNumber=${currentPageNumber}`
-    );
-    return data.data;
-  }, []);
 
   const { isPending, error, data } = useQuery({
-    queryKey: ["images", urlRef.current, currentPageNumberRef.current],
-    queryFn: () =>
-      getAllPins({
-        url: urlRef.current,
-        currentPageNumber: currentPageNumberRef.current,
-      }),
+    queryKey: ["pages"],
+    queryFn: async () => {
+      const { data } = await axios.get<PagesResponse>(
+        `${process.env.NEXT_PUBLIC_API_URL}/pages`
+      );
+      return data;
+    },
   });
+
+  console.log(data);
 
   if (isPending) {
     return (
@@ -62,7 +44,13 @@ function HomeContent() {
     return <div>Error: {error.message}</div>;
   }
 
-  return <>{<PinList images={data.images} />}</>;
+  return (
+    <div className="flex flex-wrap justify-center gap-4">
+      {data.pages.map((item) => (
+        <Card key={item.id} item={item} />
+      ))}
+    </div>
+  );
 }
 
 export default function Home() {
