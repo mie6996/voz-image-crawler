@@ -3,10 +3,11 @@ import { noSexLinks } from "../../lib/constants";
 import { ImageService } from "../../lib/ImageService";
 
 export async function GET(request: Request, context: any) {
+  console.log("Crawling images");
   const baseURL = "https://voz.vn/f/chuyen-tro-linh-tinh%E2%84%A2.17";
 
   const promises = [];
-  for (let pageNumber = 1; pageNumber <= 10; pageNumber++) {
+  for (let pageNumber = 1; pageNumber <= 100; pageNumber++) {
     promises.push(fetchPageData(baseURL, pageNumber));
   }
 
