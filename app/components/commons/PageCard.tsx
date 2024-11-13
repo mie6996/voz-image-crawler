@@ -1,4 +1,12 @@
 import { useRouter } from "next/navigation";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 export interface PageType {
   id: number;
@@ -14,23 +22,17 @@ const PageCard = ({ item }: { item: PageType }) => {
   };
 
   return (
-    <div
-      className="max-w-sm rounded overflow-hidden shadow-lg cursor-pointer"
-      onClick={handleClick}
-    >
-      <div className="px-6 py-4">
-        <div className="font-bold text-xl mb-2">{item.title}</div>
-        <p className="text-gray-700 text-base">{item.url}</p>
-      </div>
-      <div className="px-6 pt-4 pb-2">
-        <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
-          ID: {item.id}
-        </span>
-        <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
-          Max Page: {item.maxPage}
-        </span>
-      </div>
-    </div>
+    <Card className="w-[350px] flex flex-col justify-evenly">
+      <CardHeader>
+        <CardTitle>{item.title}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <CardDescription>{item.url}</CardDescription>
+      </CardContent>
+      <CardFooter>
+        <button onClick={handleClick}>View</button>
+      </CardFooter>
+    </Card>
   );
 };
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef } from "react";
+import { useCallback, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import classNames from "classnames";
@@ -25,9 +25,8 @@ interface Page {
 }
 
 function PageDetail({ params }: any) {
-  // page url is useRef
   const pageId = params.pageId;
-  const currentPageNumberRef = useRef(1);
+  const [currentPageNumber, setCurrentPageNumber] = useState(1);
 
   const getAllPins = useCallback(
     async (currentPageNumber: number) => {
@@ -40,9 +39,59 @@ function PageDetail({ params }: any) {
   );
 
   const { isPending, error, data } = useQuery({
-    queryKey: ["images", pageId, currentPageNumberRef.current],
-    queryFn: () => getAllPins(currentPageNumberRef.current),
+    queryKey: ["images", pageId, currentPageNumber],
+    queryFn: () => getAllPins(currentPageNumber),
   });
+
+  const handlePageChange = (newPageNumber: number) => {
+    setCurrentPageNumber(newPageNumber);
+  };
+
+  function createPaginationItems(currentPage: number, maxPage: number) {
+    const paginationItems = [];
+    const delta = 2;
+    const range = [];
+
+    for (
+      let i = Math.max(2, currentPage - delta);
+      i <= Math.min(maxPage - 1, currentPage + delta);
+      i++
+    ) {
+      range.push(i);
+    }
+
+    if (currentPage - delta > 2) {
+      paginationItems.push(
+        <PaginationItem key="ellipsis-prev">
+          <PaginationEllipsis />
+        </PaginationItem>
+      );
+    }
+
+    range.forEach((page) => {
+      paginationItems.push(
+        <PaginationItem key={page}>
+          <PaginationLink
+            href="#"
+            isActive={page === currentPage}
+            onClick={() => handlePageChange(page)}
+          >
+            {page}
+          </PaginationLink>
+        </PaginationItem>
+      );
+    });
+
+    if (currentPage + delta < maxPage - 1) {
+      paginationItems.push(
+        <PaginationItem key="ellipsis-next">
+          <PaginationEllipsis />
+        </PaginationItem>
+      );
+    }
+
+    return paginationItems;
+  }
 
   if (isPending) {
     return (
@@ -67,28 +116,43 @@ function PageDetail({ params }: any) {
       <Pagination>
         <PaginationContent>
           <PaginationItem>
-            <PaginationPrevious href="#" />
+            <PaginationPrevious
+              href="#"
+              onClick={() =>
+                currentPageNumber > 1 && handlePageChange(currentPageNumber - 1)
+              }
+            />
           </PaginationItem>
           <PaginationItem>
-            <PaginationLink href="#">1</PaginationLink>
+            <PaginationLink
+              href="#"
+              isActive={currentPageNumber === 1}
+              onClick={() => handlePageChange(1)}
+            >
+              1
+            </PaginationLink>
           </PaginationItem>
+          {createPaginationItems(currentPageNumber, data.maxPage)}
           <PaginationItem>
-            <PaginationLink href="#" isActive>
-              2
+            <PaginationLink
+              href="#"
+              isActive={currentPageNumber === data.maxPage}
+              onClick={() => handlePageChange(data.maxPage)}
+            >
+              {data.maxPage}
             </PaginationLink>
           </PaginationItem>
           <PaginationItem>
-            <PaginationLink href="#">3</PaginationLink>
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationEllipsis />
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationNext href="#" />
+            {currentPageNumber < data.maxPage && (
+              <PaginationNext
+                href="#"
+                onClick={() => handlePageChange(currentPageNumber + 1)}
+              />
+            )}
           </PaginationItem>
         </PaginationContent>
       </Pagination>
-      {/* {<PinList images={data.images} />} */}
+      {<PinList images={data.images} />}
     </>
   );
 }

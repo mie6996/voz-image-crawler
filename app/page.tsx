@@ -6,8 +6,6 @@ import axios from "axios";
 import Spinner from "./components/commons/Spinner";
 import classNames from "classnames";
 import { useQuery } from "@tanstack/react-query";
-import { ModeToggle } from "@/components/ModeToggle";
-import { Button } from "@/components/ui/button";
 
 interface PagesResponse {
   message: string;
@@ -44,18 +42,13 @@ function HomeContent() {
   }
 
   return (
-    // <>
-    //   <ModeToggle />
-
-    //   <div className="flex flex-wrap justify-center gap-4">
-    //     {data.pages.map((item) => (
-    //       <PageCard key={item.id} item={item} />
-    //     ))}
-    //   </div>
-    // </>
-    <div className="flex items-center justify-center">
-      <Button>Click me</Button>
-    </div>
+    <>
+      <div className="flex flex-wrap justify-center gap-4">
+        {data.pages.map((item) => (
+          <PageCard key={item.id} item={item} />
+        ))}
+      </div>
+    </>
   );
 }
 

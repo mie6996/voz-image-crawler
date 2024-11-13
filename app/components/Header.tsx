@@ -2,7 +2,9 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
+import { ModeToggle } from "@/components/ModeToggle";
+import { buttonVariants } from "@/components/ui/button";
+import Link from "next/link";
 
 function Header() {
   const router = useRouter();
@@ -15,10 +17,13 @@ function Header() {
         width={50}
         height={50}
         onClick={() => router.push("/")}
-        className="hover:bg-gray-300 p-2 rounded-full cursor-pointer"
+        className="p-2 rounded-full cursor-pointer hover:bg-primary-foreground hover:bg-opacity-10"
         priority
       />
-      <Button>Home</Button>
+      <Link href="/" className={buttonVariants({ variant: "outline" })}>
+        Home
+      </Link>
+      <ModeToggle />
     </div>
   );
 }
