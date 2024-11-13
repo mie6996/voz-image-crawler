@@ -6,8 +6,8 @@ import classNames from "classnames";
 import { useRouter } from "next/navigation";
 import Spinner from "../../components/commons/Spinner";
 import PinImage from "../../components/pinDetail/PinImage";
-import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 function PinDetail({ params }: any) {
   const router = useRouter();

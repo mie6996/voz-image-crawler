@@ -113,46 +113,56 @@ function PageDetail({ params }: any) {
 
   return (
     <>
-      <Pagination>
-        <PaginationContent>
-          <PaginationItem>
-            <PaginationPrevious
-              href="#"
-              onClick={() =>
-                currentPageNumber > 1 && handlePageChange(currentPageNumber - 1)
-              }
-            />
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationLink
-              href="#"
-              isActive={currentPageNumber === 1}
-              onClick={() => handlePageChange(1)}
-            >
-              1
-            </PaginationLink>
-          </PaginationItem>
-          {createPaginationItems(currentPageNumber, data.maxPage)}
-          <PaginationItem>
-            <PaginationLink
-              href="#"
-              isActive={currentPageNumber === data.maxPage}
-              onClick={() => handlePageChange(data.maxPage)}
-            >
-              {data.maxPage}
-            </PaginationLink>
-          </PaginationItem>
-          <PaginationItem>
-            {currentPageNumber < data.maxPage && (
-              <PaginationNext
+      <div className="flex flex-col justify-center items-center">
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
                 href="#"
-                onClick={() => handlePageChange(currentPageNumber + 1)}
+                onClick={() =>
+                  currentPageNumber > 1 &&
+                  handlePageChange(currentPageNumber - 1)
+                }
               />
-            )}
-          </PaginationItem>
-        </PaginationContent>
-      </Pagination>
-      {<PinList images={data.images} />}
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationLink
+                href="#"
+                isActive={currentPageNumber === 1}
+                onClick={() => handlePageChange(1)}
+              >
+                1
+              </PaginationLink>
+            </PaginationItem>
+            {createPaginationItems(currentPageNumber, data.maxPage)}
+            <PaginationItem>
+              <PaginationLink
+                href="#"
+                isActive={currentPageNumber === data.maxPage}
+                onClick={() => handlePageChange(data.maxPage)}
+              >
+                {data.maxPage}
+              </PaginationLink>
+            </PaginationItem>
+            <PaginationItem>
+              {currentPageNumber < data.maxPage && (
+                <PaginationNext
+                  href="#"
+                  onClick={() => handlePageChange(currentPageNumber + 1)}
+                />
+              )}
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+        {
+          // check if there are images
+          data.images.length > 0 ? (
+            <PinList images={data.images} />
+          ) : (
+            <div>No images found</div>
+          )
+        }
+      </div>
     </>
   );
 }
