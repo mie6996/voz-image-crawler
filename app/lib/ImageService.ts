@@ -70,6 +70,7 @@ export class ImageService {
   };
 
   static crawlImages = async (url: string) => {
+    console.time("Crawling images for " + url);
     const parentPage = await prisma.parentPage.findFirst({
       where: {
         url,
@@ -88,56 +89,81 @@ export class ImageService {
     const title = html.match(/<title>([^<]+)<\/title>/)?.[1] ?? "Unknown";
     // get max page number
     const maxPage = html.match(/min="1" max="(\d+)"/)?.[1];
+    const currentMaxPage = parentPage?.maxPage ?? 0;
+
+    // if max page is not changed, return
+    if (currentMaxPage >= Number(maxPage)) {
+      return {
+        message: `Images are already crawled for ${url}`,
+      };
+    }
 
     // get images from all pages
-    const promises = Array.from({ length: Number(maxPage) }, (_, i) =>
-      (async () => {
-        const data = await ImageService.getImagesByPageNumber(url, i + 1);
-
-        // save parent page
-        const parentPage = await prisma.parentPage.upsert({
-          where: {
+    const promises = Array.from(
+      { length: Number(maxPage) - currentMaxPage },
+      (_, i) =>
+        (async () => {
+          const data = await ImageService.getImagesByPageNumber(
             url,
-          },
-          update: {
-            maxPage: Number(maxPage),
-          },
-          create: {
-            url,
-            title,
-            maxPage: Number(maxPage),
-          },
-        });
+            currentMaxPage + i + 1
+          );
 
-        // save images to database
-        await prisma.page.upsert({
-          where: {
-            parentId_pageNumber: {
-              parentId: parentPage.id,
-              pageNumber: i + 1,
+          // save parent page
+          const parentPage = await prisma.parentPage.upsert({
+            where: {
+              url,
             },
-          },
-          update: {
-            images: {
-              create: data.images,
+            update: {
+              maxPage: Number(maxPage),
             },
-          },
-          create: {
-            pageNumber: i + 1,
-            parent: {
-              connect: {
-                url,
+            create: {
+              url,
+              title,
+              maxPage: Number(maxPage),
+            },
+          });
+
+          // save images to database
+          await prisma.page.upsert({
+            where: {
+              parentId_pageNumber: {
+                parentId: parentPage.id,
+                pageNumber: i + 1,
               },
             },
-            images: {
-              create: data.images,
+            update: {
+              images: {
+                create: data.images,
+              },
             },
-          },
-        });
-      })()
+            create: {
+              pageNumber: i + 1,
+              parent: {
+                connect: {
+                  url,
+                },
+              },
+              images: {
+                create: data.images,
+              },
+            },
+          });
+        })()
     );
 
     await Promise.all(promises);
+
+    // Update max page
+    await prisma.parentPage.update({
+      where: {
+        id: parentPage?.id,
+      },
+      data: {
+        maxPage: Number(maxPage),
+      },
+    });
+
+    console.timeEnd("Crawling images for " + url);
 
     return {
       message: `Images are crawled for ${url}`,

@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/images/crawl?url=https://voz.vn/t/trong-rau-san-thuong-noi-thu-gian-cho-anh-em-sau-gio-lam-viec.788620/",
+      "schedule": "* * * * *"
+    }
+  ]
+}
