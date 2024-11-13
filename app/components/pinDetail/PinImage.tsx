@@ -15,9 +15,9 @@ function PinImage({
         alt={pinDetail.url}
         width={1000}
         height={1000}
-        className="rounded-2xl"
         blurDataURL={pinDetail.url}
         loading="lazy"
+        className="rounded-2xl shadow-lg max-w-prose"
       />
     </div>
   );

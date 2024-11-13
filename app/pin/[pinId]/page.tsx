@@ -4,10 +4,10 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import classNames from "classnames";
 import { useRouter } from "next/navigation";
-import { HiArrowSmallLeft } from "react-icons/hi2";
 import Spinner from "../../components/commons/Spinner";
 import PinImage from "../../components/pinDetail/PinImage";
-import PinInfo from "../../components/pinDetail/PinInfo";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft } from "lucide-react";
 
 function PinDetail({ params }: any) {
   const router = useRouter();
@@ -43,23 +43,12 @@ function PinDetail({ params }: any) {
 
   return (
     <>
-      {pinDetail ? (
-        <div className=" bg-white p-3 md:p-12 rounded-2xl md:px-24 lg:px-36">
-          <div>
-            <HiArrowSmallLeft
-              className="text-[60px] font-bold cursor-pointer hover:bg-gray-200 rounded-full p-2 "
-              onClick={() => router.back()}
-            />
-          </div>
-          <div
-            className="grid grid-cols-1 lg:grid-cols-2 md:gap-10 shadow-lg
-      rounded-2xl p-3 md:p-7 lg:p-12 xl:pd-16 "
-          >
-            <PinImage pinDetail={pinDetail} />
-            <PinInfo pinDetail={pinDetail} />
-          </div>
-        </div>
-      ) : null}
+      <div className="flex items-center justify-center gap-x-4">
+        <Button variant="outline" size="icon" onClick={() => router.back()}>
+          <ChevronLeft />
+        </Button>
+        <PinImage pinDetail={pinDetail} />
+      </div>
     </>
   );
 }
