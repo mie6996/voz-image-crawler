@@ -9,16 +9,15 @@ export async function GET(request: NextRequest) {
   );
 
   // get images from original page
-  const { images, maxPage } = await ImageService.getImages(
+  const { images, metadata } = await ImageService.getImages(
     pageId,
     currentPageNumber
   );
 
   const data = {
     message: images.length > 0 ? "Success" : "No images found",
-    currentPageNumber,
-    maxPage,
     images,
+    metadata,
   };
 
   return NextResponse.json(data);

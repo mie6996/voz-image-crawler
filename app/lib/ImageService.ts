@@ -1,4 +1,4 @@
-import { ignoreLinks } from "./constants";
+import { ignoreLinks, LIMIT_PER_PAGE } from "./constants";
 import { prisma } from "./prisma";
 
 export class ImageService {
@@ -14,25 +14,26 @@ export class ImageService {
       return { images: [], maxPage: 0 };
     }
 
-    const page = await prisma.page.findFirst({
-      where: {
-        parentId: parentPageId,
-        pageNumber: currentPageNumber,
-      },
-    });
-
-    if (!page) {
-      return { images: [], maxPage: parentPage.maxPage };
-    }
-
+    // Get images based on the parent page id
     const images = await prisma.image.findMany({
       where: {
-        pageId: page.id,
+        page: { parentId: parentPageId },
       },
-      select: { id: true, url: true },
+      // pagination
+      skip: (currentPageNumber - 1) * LIMIT_PER_PAGE,
+      take: LIMIT_PER_PAGE,
     });
 
-    return { images, maxPage: parentPage.maxPage };
+    const totalImages = await prisma.page.count({
+      where: { parentId: parentPageId },
+    });
+
+    const metadata = {
+      currentPageNumber,
+      totalPage: Math.ceil(totalImages / LIMIT_PER_PAGE),
+    };
+
+    return { images, metadata };
   }
 
   static async getMaxPage(url: string) {
@@ -55,7 +56,7 @@ export class ImageService {
     const res = await fetch(url);
     const html = await res.text();
     const title = html.match(/<title>([^<]+)<\/title>/)?.[1] ?? "Unknown";
-    const currentMaxPage = parentPage?.maxPage ?? 1;
+    const currentMaxPage = parentPage?.maxPage ?? 0;
 
     if (currentMaxPage >= maxPage) {
       return { message: `Images are already crawled for ${url}` };

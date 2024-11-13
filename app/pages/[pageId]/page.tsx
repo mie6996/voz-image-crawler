@@ -16,12 +16,15 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 
+interface PageMetadata {
+  currentPageNumber: number;
+  totalPage: number;
+}
+
 interface Page {
   message: string;
-  url: string;
-  currentPageNumber: number;
-  maxPage: number;
   images: ImageType[];
+  metadata: PageMetadata;
 }
 
 function PageDetail({ params }: any) {
@@ -125,27 +128,29 @@ function PageDetail({ params }: any) {
                 }
               />
             </PaginationItem>
+            {data.metadata.totalPage > 1 && (
+              <PaginationItem>
+                <PaginationLink
+                  href="#"
+                  isActive={currentPageNumber === 1}
+                  onClick={() => handlePageChange(1)}
+                >
+                  1
+                </PaginationLink>
+              </PaginationItem>
+            )}
+            {createPaginationItems(currentPageNumber, data.metadata.totalPage)}
             <PaginationItem>
               <PaginationLink
                 href="#"
-                isActive={currentPageNumber === 1}
-                onClick={() => handlePageChange(1)}
+                isActive={currentPageNumber === data.metadata.totalPage}
+                onClick={() => handlePageChange(data.metadata.totalPage)}
               >
-                1
-              </PaginationLink>
-            </PaginationItem>
-            {createPaginationItems(currentPageNumber, data.maxPage)}
-            <PaginationItem>
-              <PaginationLink
-                href="#"
-                isActive={currentPageNumber === data.maxPage}
-                onClick={() => handlePageChange(data.maxPage)}
-              >
-                {data.maxPage}
+                {data.metadata.totalPage}
               </PaginationLink>
             </PaginationItem>
             <PaginationItem>
-              {currentPageNumber < data.maxPage && (
+              {currentPageNumber < data.metadata.totalPage && (
                 <PaginationNext
                   href="#"
                   onClick={() => handlePageChange(currentPageNumber + 1)}
