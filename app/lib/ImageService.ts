@@ -1,5 +1,5 @@
+import { ignoreLinks } from "./constants";
 import { prisma } from "./prisma";
-import { RedisService } from "./RedisService";
 
 export class ImageService {
   // Get images from the original page
@@ -8,30 +8,6 @@ export class ImageService {
     if (currentPageNumber < 1) {
       currentPageNumber = 1;
     }
-
-    // const pageRedisKey = RedisService.generateKey(
-    //   "page",
-    //   encodeURIComponent(url),
-    //   String(currentPageNumber)
-    // );
-
-    // try {
-    //   const images = await RedisService.getKey(pageRedisKey);
-    //   if (images !== null) {
-    //     return images;
-    //   }
-    // } catch (e) {
-    //   console.error(e);
-    //   // if (e instanceof Error) {
-    //   //   console.error(
-    //   //     "[Redis] Could not connect to Redis due to error " + e.message
-    //   //   );
-    //   // } else {
-    //   //   console.error(
-    //   //     "[Redis] Could not connect to Redis due to an unknown error!"
-    //   //   );
-    //   // }
-    // }
 
     // Check if the page exists in the database
     const parentPage = await prisma.parentPage.findFirst({
@@ -77,21 +53,6 @@ export class ImageService {
         url: true,
       },
     });
-
-    // try {
-    //   await RedisService.setKey(pageRedisKey, JSON.stringify(images));
-    // } catch (e) {
-    //   console.error(e);
-    //   // if (e instanceof Error) {
-    //   //   console.error(
-    //   //     "[Redis] Could not connect to Redis due to error " + e.message
-    //   //   );
-    //   // } else {
-    //   //   console.error(
-    //   //     "[Redis] Could not connect to Redis due to an unknown error"
-    //   //   );
-    //   // }
-    // }
 
     return {
       images,
@@ -221,7 +182,10 @@ export class ImageService {
 
     const images = imageLinks
       ?.filter((link) => {
-        if (link?.includes("/styles") || link?.includes("/avatars")) {
+        if (
+          link &&
+          ignoreLinks.some((ignoreLink) => link.includes(ignoreLink) || !link)
+        ) {
           return false;
         }
 
