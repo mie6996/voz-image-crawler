@@ -89,7 +89,7 @@ export class ImageService {
     const title = html.match(/<title>([^<]+)<\/title>/)?.[1] ?? "Unknown";
     // get max page number
     const maxPage = html.match(/min="1" max="(\d+)"/)?.[1];
-    const currentMaxPage = parentPage?.maxPage ?? 0;
+    const currentMaxPage = parentPage?.maxPage ?? 1;
 
     // if max page is not changed, return
     if (currentMaxPage >= Number(maxPage)) {
@@ -151,8 +151,6 @@ export class ImageService {
         })()
     );
 
-    await Promise.all(promises);
-
     // Update max page
     await prisma.parentPage.update({
       where: {
@@ -162,6 +160,12 @@ export class ImageService {
         maxPage: Number(maxPage),
       },
     });
+
+    // limit 10 connection pools at the time
+    const LIMIT = 10;
+    for (let i = 0; i < promises.length; i += LIMIT) {
+      await Promise.all(promises.slice(i, i + LIMIT));
+    }
 
     console.timeEnd("Crawling images for " + url);
 
