@@ -5,6 +5,17 @@
   // language - current active spelling language
   "language": "en",
   // words - list of words to be always considered correct
-  "words": ["tailwindcss", "tanstack"],
-  "ignorePaths": ["node_modules", ".git", ".next", ".vercel", "*.json"]
+  "words": [
+    "clsx",
+    "Pinterest",
+    "tailwindcss",
+    "tanstack"
+  ],
+  "ignorePaths": [
+    "node_modules",
+    ".git",
+    ".next",
+    ".vercel",
+    "*.json"
+  ]
 }

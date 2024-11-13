@@ -1,6 +1,6 @@
 This is a Voz Image Crawler Project using NextJS.
 
-## Sceeenshot
+## Screenshot
 
 ![alt text](screenshort/image.png)
 
