@@ -31,6 +31,7 @@ export class ImageService {
     const metadata = {
       currentPageNumber,
       totalPage: Math.ceil(totalImages / LIMIT_PER_PAGE),
+      title: parentPage.title,
     };
 
     return { images, metadata };

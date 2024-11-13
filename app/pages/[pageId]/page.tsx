@@ -19,6 +19,7 @@ import {
 interface PageMetadata {
   currentPageNumber: number;
   totalPage: number;
+  title: string;
 }
 
 interface Page {
@@ -116,7 +117,8 @@ function PageDetail({ params }: any) {
 
   return (
     <>
-      <div className="flex flex-col justify-center items-center">
+      <div className="flex flex-col justify-center items-center space-y-10">
+        <h2 className="text-3xl">{data.metadata.title}</h2>
         <Pagination>
           <PaginationContent>
             <PaginationItem>
