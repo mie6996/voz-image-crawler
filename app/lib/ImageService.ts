@@ -16,6 +16,7 @@ export class ImageService {
 
     // Get images based on the parent page id
     const images = await prisma.image.findMany({
+      select: { id: true, url: true },
       where: {
         page: { parentId: parentPageId },
       },
@@ -32,6 +33,7 @@ export class ImageService {
       currentPageNumber,
       totalPage: Math.ceil(totalImages / LIMIT_PER_PAGE),
       title: parentPage.title,
+      totalImages,
     };
 
     return { images, metadata };
@@ -45,8 +47,6 @@ export class ImageService {
   }
 
   static async crawlImages(url: string) {
-    console.time("Crawling images for " + url);
-
     const parentPage = await prisma.parentPage.findFirst({ where: { url } });
     const maxPage = await this.getMaxPage(url);
 
@@ -72,7 +72,6 @@ export class ImageService {
       await Promise.all(promises.slice(i, i + LIMIT));
     }
 
-    console.timeEnd("Crawling images for " + url);
     return { message: `Images are crawled for ${url}` };
   }
 

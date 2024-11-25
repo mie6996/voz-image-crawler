@@ -5,4 +5,4 @@ export const ignoreLinks = [
   "/proxy.php?image=",
 ];
 export const noSexLinks = ["no-sex", "no-sech"];
-export const LIMIT_PER_PAGE = 15;
+export const LIMIT_PER_PAGE = 10;
