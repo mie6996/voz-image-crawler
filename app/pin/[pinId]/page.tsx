@@ -3,15 +3,10 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import classNames from "classnames";
-import { useRouter } from "next/navigation";
 import Spinner from "../../components/commons/Spinner";
 import PinImage from "../../components/pinDetail/PinImage";
-import { ChevronLeft } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 function PinDetail({ params }: any) {
-  const router = useRouter();
-
   const getPinDetail = async () => {
     const data = await axios.get(
       `${process.env.NEXT_PUBLIC_API_URL}/images/${params.pinId}`
@@ -43,12 +38,7 @@ function PinDetail({ params }: any) {
 
   return (
     <>
-      <div className="flex items-center justify-center gap-x-4">
-        <Button variant="outline" size="icon" onClick={() => router.back()}>
-          <ChevronLeft />
-        </Button>
-        <PinImage pinDetail={pinDetail} />
-      </div>
+      <PinImage pinDetail={pinDetail} />
     </>
   );
 }

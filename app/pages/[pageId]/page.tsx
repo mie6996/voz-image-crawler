@@ -1,9 +1,10 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect, useReducer, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import classNames from "classnames";
+import { useRouter } from "next/navigation";
 import Spinner from "../../components/commons/Spinner";
 import PinList, { ImageType } from "../../components/pin/ImageList";
 import {
@@ -29,8 +30,10 @@ interface Page {
 }
 
 function PageDetail({ params }: any) {
+  const router = useRouter();
   const pageId = params.pageId;
-  const [currentPageNumber, setCurrentPageNumber] = useState(1);
+  const pageNumber = parseInt(params.pageNumber) || 1;
+  const currentPageNumberRef = useRef(pageNumber);
 
   const getAllPins = useCallback(
     async (currentPageNumber: number) => {
@@ -43,13 +46,18 @@ function PageDetail({ params }: any) {
   );
 
   const { isPending, error, data } = useQuery({
-    queryKey: ["images", pageId, currentPageNumber],
-    queryFn: () => getAllPins(currentPageNumber),
+    queryKey: ["images", pageId, currentPageNumberRef.current],
+    queryFn: () => getAllPins(currentPageNumberRef.current),
   });
 
   const handlePageChange = (newPageNumber: number) => {
-    setCurrentPageNumber(newPageNumber);
+    currentPageNumberRef.current = newPageNumber;
+    router.push(`/pages/${pageId}?pageNumber=${newPageNumber}`);
   };
+
+  useEffect(() => {
+    currentPageNumberRef.current = pageNumber;
+  }, [pageNumber]);
 
   function createPaginationItems(currentPage: number, maxPage: number) {
     const paginationItems = [];
@@ -118,15 +126,23 @@ function PageDetail({ params }: any) {
   return (
     <>
       <div className="flex flex-col justify-center items-center space-y-10">
-        <h2 className="text-3xl">{data.metadata.title}</h2>
+        <h2 className="text-3xl mx-8 md:mx-0 text-center">
+          {data.metadata.title}
+        </h2>
         <Pagination>
           <PaginationContent>
             <PaginationItem>
               <PaginationPrevious
                 href="#"
+                aria-disabled={currentPageNumberRef.current <= 1}
                 onClick={() =>
-                  currentPageNumber > 1 &&
-                  handlePageChange(currentPageNumber - 1)
+                  currentPageNumberRef.current > 1 &&
+                  handlePageChange(currentPageNumberRef.current - 1)
+                }
+                className={
+                  currentPageNumberRef.current <= 1
+                    ? "pointer-events-none opacity-50"
+                    : undefined
                 }
               />
             </PaginationItem>
@@ -134,28 +150,35 @@ function PageDetail({ params }: any) {
               <PaginationItem>
                 <PaginationLink
                   href="#"
-                  isActive={currentPageNumber === 1}
+                  isActive={currentPageNumberRef.current === 1}
                   onClick={() => handlePageChange(1)}
                 >
                   1
                 </PaginationLink>
               </PaginationItem>
             )}
-            {createPaginationItems(currentPageNumber, data.metadata.totalPage)}
+            {createPaginationItems(
+              currentPageNumberRef.current,
+              data.metadata.totalPage
+            )}
             <PaginationItem>
               <PaginationLink
                 href="#"
-                isActive={currentPageNumber === data.metadata.totalPage}
+                isActive={
+                  currentPageNumberRef.current === data.metadata.totalPage
+                }
                 onClick={() => handlePageChange(data.metadata.totalPage)}
               >
                 {data.metadata.totalPage}
               </PaginationLink>
             </PaginationItem>
             <PaginationItem>
-              {currentPageNumber < data.metadata.totalPage && (
+              {currentPageNumberRef.current < data.metadata.totalPage && (
                 <PaginationNext
                   href="#"
-                  onClick={() => handlePageChange(currentPageNumber + 1)}
+                  onClick={() =>
+                    handlePageChange(currentPageNumberRef.current + 1)
+                  }
                 />
               )}
             </PaginationItem>
