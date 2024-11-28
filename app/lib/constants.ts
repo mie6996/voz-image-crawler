@@ -3,6 +3,7 @@ export const ignoreLinks = [
   "/styles",
   "/avatars",
   "/proxy.php?image=",
+  "twemoji",
 ];
 export const noSexLinks = ["no-sex", "no-sech"];
 export const LIMIT_PER_PAGE = 20;
