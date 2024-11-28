@@ -39,7 +39,7 @@ export async function GET(request: Request, context: any) {
   });
 }
 
-export const fetchPageData = async (baseURL: string, pageNumber: number) => {
+const fetchPageData = async (baseURL: string, pageNumber: number) => {
   const pageUrl = `${baseURL}/page-${pageNumber}`;
   const res = await fetch(pageUrl);
   const html = await res.text();
